@@ -1,0 +1,11 @@
+C:\Dev\Migrador\Migrador\Migrador.Domain\obj\Debug\net8.0\Migrador.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Dev\Migrador\Migrador\Migrador.Domain\obj\Debug\net8.0\Migrador.Domain.AssemblyInfoInputs.cache
+C:\Dev\Migrador\Migrador\Migrador.Domain\obj\Debug\net8.0\Migrador.Domain.AssemblyInfo.cs
+C:\Dev\Migrador\Migrador\Migrador.Domain\obj\Debug\net8.0\Migrador.Domain.csproj.CoreCompileInputs.cache
+C:\Dev\Migrador\Migrador\Migrador.Domain\bin\Debug\net8.0\Migrador.Domain.deps.json
+C:\Dev\Migrador\Migrador\Migrador.Domain\bin\Debug\net8.0\Migrador.Domain.dll
+C:\Dev\Migrador\Migrador\Migrador.Domain\bin\Debug\net8.0\Migrador.Domain.pdb
+C:\Dev\Migrador\Migrador\Migrador.Domain\obj\Debug\net8.0\Migrador.Domain.dll
+C:\Dev\Migrador\Migrador\Migrador.Domain\obj\Debug\net8.0\refint\Migrador.Domain.dll
+C:\Dev\Migrador\Migrador\Migrador.Domain\obj\Debug\net8.0\Migrador.Domain.pdb
+C:\Dev\Migrador\Migrador\Migrador.Domain\obj\Debug\net8.0\ref\Migrador.Domain.dll

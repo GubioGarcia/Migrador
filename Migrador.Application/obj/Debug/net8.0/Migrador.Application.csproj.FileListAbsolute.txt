@@ -1,0 +1,15 @@
+C:\Dev\Migrador\Migrador\Migrador.Application\obj\Debug\net8.0\Migrador.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Dev\Migrador\Migrador\Migrador.Application\obj\Debug\net8.0\Migrador.Application.AssemblyInfoInputs.cache
+C:\Dev\Migrador\Migrador\Migrador.Application\obj\Debug\net8.0\Migrador.Application.AssemblyInfo.cs
+C:\Dev\Migrador\Migrador\Migrador.Application\obj\Debug\net8.0\Migrador.Application.csproj.CoreCompileInputs.cache
+C:\Dev\Migrador\Migrador\Migrador.Application\bin\Debug\net8.0\Migrador.Application.deps.json
+C:\Dev\Migrador\Migrador\Migrador.Application\bin\Debug\net8.0\Migrador.Application.dll
+C:\Dev\Migrador\Migrador\Migrador.Application\bin\Debug\net8.0\Migrador.Application.pdb
+C:\Dev\Migrador\Migrador\Migrador.Application\bin\Debug\net8.0\Migrador.Domain.dll
+C:\Dev\Migrador\Migrador\Migrador.Application\bin\Debug\net8.0\Migrador.Domain.pdb
+C:\Dev\Migrador\Migrador\Migrador.Application\obj\Debug\net8.0\Migrador.Application.csproj.AssemblyReference.cache
+C:\Dev\Migrador\Migrador\Migrador.Application\obj\Debug\net8.0\Migrador.3202A713.Up2Date
+C:\Dev\Migrador\Migrador\Migrador.Application\obj\Debug\net8.0\Migrador.Application.dll
+C:\Dev\Migrador\Migrador\Migrador.Application\obj\Debug\net8.0\refint\Migrador.Application.dll
+C:\Dev\Migrador\Migrador\Migrador.Application\obj\Debug\net8.0\Migrador.Application.pdb
+C:\Dev\Migrador\Migrador\Migrador.Application\obj\Debug\net8.0\ref\Migrador.Application.dll
