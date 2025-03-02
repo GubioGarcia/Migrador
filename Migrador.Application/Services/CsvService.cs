@@ -11,57 +11,56 @@ using System.Threading.Tasks;
 
 namespace Migrador.Application.Services
 {
-    public class CsvService
+    public static class CsvService
     {
-        private readonly EtapaMigrador _etapaMigrador;
-
-        public CsvService(EtapaMigrador etapaMigrador)
+        public static async Task<List<Dictionary<string, string>>> LerCsvAsync(IFormFile arquivo)
         {
-            _etapaMigrador = etapaMigrador;
-        }
-
-        public async Task<List<Dictionary<string, string>>> LerArquivoCsv(IFormFile arquivo)
-        {
-            using var reader = new StreamReader(arquivo.OpenReadStream());
-            using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
+            using StreamReader reader = new(arquivo.OpenReadStream());
+            using CsvReader csv = new(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 Delimiter = ";",
                 HasHeaderRecord = true
             });
 
-            var registros = new List<Dictionary<string, string>>();
-            while (csv.Read())
+            List<Dictionary<string, string>> registros = [];
+            await csv.ReadAsync();
+            csv.ReadHeader();
+            while (await csv.ReadAsync())
             {
-                var linha = csv.GetRecord<dynamic>() as IDictionary<string, object>;
-                registros.Add(linha.ToDictionary(k => k.Key, v => v.Value?.ToString() ?? ""));
+                var row = csv.GetRecord<dynamic>() as IDictionary<string, object>;
+                registros.Add(row.ToDictionary(k => k.Key, v => v.Value?.ToString() ?? ""));
             }
-
-            return _etapaMigrador.ProcessarDados(registros);
+            return registros;
         }
 
-        public async Task<byte[]> SalvarArquivoCsv(IFormFile arquivo)
+        public static byte[] SalvarCsvEmMemoria(List<Dictionary<string, string>> dados)
         {
-            var arquivoLido = await LerArquivoCsv(arquivo);
-
-            using var memoryStream = new MemoryStream();
-            using var writer = new StreamWriter(memoryStream);
-            using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
-
-            if (arquivoLido.Count > 0)
+            using MemoryStream memoryStream = new();
+            using StreamWriter writer = new(memoryStream);
+            using CsvWriter csv = new(writer, new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                foreach (var chave in arquivoLido[0].Keys)
+                Delimiter = ";"
+            });
+
+            if (dados.Count > 0)
+            {
+                foreach (string chave in dados[0].Keys)
+                {
                     csv.WriteField(chave);
+                }
                 csv.NextRecord();
             }
 
-            foreach (var item in arquivoLido)
+            foreach (Dictionary<string, string> item in dados)
             {
-                foreach (var chave in item.Keys)
+                foreach (string chave in item.Keys)
+                {
                     csv.WriteField(item[chave]);
+                }
                 csv.NextRecord();
             }
 
-            await writer.FlushAsync();
+            writer.Flush();
             return memoryStream.ToArray();
         }
     }

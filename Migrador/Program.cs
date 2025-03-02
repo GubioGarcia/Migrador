@@ -1,4 +1,6 @@
 using Migrador.Application.Services;
+using Migrador.Application.Interfaces;
+using Migrador.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +12,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 //Injeção de dependência
-builder.Services.AddScoped<CsvService>();
-builder.Services.AddScoped<EtapaMigrador>();
+builder.Services.AddScoped<EtapaMigradorService>();
+builder.Services.AddScoped<RespostaMigradorService>();
+builder.Services.AddScoped<IManipularArquivoService, ManipularArquivoService>();
 
 var app = builder.Build();
 
