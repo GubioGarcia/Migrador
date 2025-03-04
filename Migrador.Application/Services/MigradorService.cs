@@ -8,7 +8,7 @@ namespace Migrador.Application.Services
 {
     public abstract class MigradorService
     {
-        public List<Dictionary<string, string>> ProcessarDados(List<Dictionary<string, string>> dados, int numDialogoFuturo)
+        public List<Dictionary<string, string>> ConverterDadosIniciaisDosRegistros(List<Dictionary<string, string>> dados, int numDialogoFuturo)
         {
             ArgumentNullException.ThrowIfNull(dados);
 
@@ -53,7 +53,7 @@ namespace Migrador.Application.Services
             }
         }
 
-        public static void ConversorRegistrosEtapaEResposta(List<Dictionary<string, string>> etapa, List<Dictionary<string, string>> resposta)
+        public static void ConverterRegistrosEtapaEResposta(List<Dictionary<string, string>> etapa, List<Dictionary<string, string>> resposta)
         {
             // Itera registro a registro dos dados da Etapa
             foreach (var itemEtapa in etapa)
