@@ -78,5 +78,20 @@ namespace Migrador.Application.Services
             writer.Flush();
             return memoryStream.ToArray();
         }
+
+        public static byte[] SalvarTxtDeRegistro(List<string> registrosAlteracoes)
+        {
+            using MemoryStream memoryStream = new();
+            using StreamWriter writer = new(memoryStream);
+
+            foreach (string registro in registrosAlteracoes)
+            {
+                writer.WriteLine(registro);
+            }
+
+            // Garante que todos os dados foram gravados no MemoryStream
+            writer.Flush();
+            return memoryStream.ToArray();
+        }
     }
 }

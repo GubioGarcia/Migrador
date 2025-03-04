@@ -53,7 +53,7 @@ namespace Migrador.Application.Services
             }
         }
 
-        public static void ConverterRegistrosEtapaEResposta(List<Dictionary<string, string>> etapa, List<Dictionary<string, string>> resposta)
+        public static void ConverterRegistrosEtapaEResposta(List<Dictionary<string, string>> etapa, List<Dictionary<string, string>> resposta, List<string> registrosAlteracoes)
         {
             // Itera registro a registro dos dados da Etapa
             foreach (var itemEtapa in etapa)
@@ -83,6 +83,9 @@ namespace Migrador.Application.Services
                                         itemResposta["Legenda"] = itemResposta["Legenda"][..20];
                                 }
                             }
+
+                            // registra alteração da etapa
+                            registrosAlteracoes.Add("Etapa: " + numEtapa);
                         }
                         else if (countRespostas > 3/* && countRespostas <= 10*/)
                         {
@@ -117,6 +120,9 @@ namespace Migrador.Application.Services
                                     }
                                 }
                             }
+
+                            // registra alteração da etapa
+                            registrosAlteracoes.Add("Etapa: " + numEtapa);
                         }
                     }
                 }

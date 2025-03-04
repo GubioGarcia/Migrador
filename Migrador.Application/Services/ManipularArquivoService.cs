@@ -26,16 +26,19 @@ namespace Migrador.Application.Services
             List<Dictionary<string, string>> dadosProcessadosEtapa = _etapaMigradorService.ConverterDadosIniciaisDosRegistros(dadosEtapa, numDialogo);
             List<Dictionary<string, string>> dadosProcessadosResposta = _respostaMigradorService.ConverterDadosIniciaisDosRegistros(dadosResposta, numDialogo);
 
-            MigradorService.ConverterRegistrosEtapaEResposta(dadosProcessadosEtapa, dadosProcessadosResposta);
+            List<string> registrosAlteracoes = [];
+
+            MigradorService.ConverterRegistrosEtapaEResposta(dadosProcessadosEtapa, dadosProcessadosResposta, registrosAlteracoes);
 
             byte[] arquivoEtapaProcessado = CsvService.SalvarCsvEmMemoria(dadosProcessadosEtapa);
             byte[] arquivoRespostaProcessado = CsvService.SalvarCsvEmMemoria(dadosProcessadosResposta);
+            byte[] arquivoRegistroDeAlteracoes = CsvService.SalvarTxtDeRegistro(registrosAlteracoes);
 
-            return CompactarArquivos(arquivoEtapaProcessado, arquivoRespostaProcessado);
+            return CompactarArquivos(arquivoEtapaProcessado, arquivoRespostaProcessado, arquivoRegistroDeAlteracoes);
         }
 
         // Retorna um array de bytes contendo os arquivos de entrada compactados em um arquivo ZIP
-        private static byte[] CompactarArquivos(byte[] arquivoEtapaProcessado, byte[] arquivoRespostaProcessado)
+        private static byte[] CompactarArquivos(byte[] arquivoEtapaProcessado, byte[] arquivoRespostaProcessado, byte[] arquivoRegistroDeAlteracoes)
         {
             // cria um MemoryStream para armazenar os dados do arquivo ZIP
             using MemoryStream memoryStream = new();
@@ -58,6 +61,14 @@ namespace Migrador.Application.Services
                 {
                     // escreve os dados do arquivo de saída da Resposta no fluxo de dados
                     entryStream.Write(arquivoRespostaProcessado, 0, arquivoRespostaProcessado.Length);
+                }
+
+                // cria uma entrada no arquivo ZIP para o arquivo de registro
+                ZipArchiveEntry entryRegistro = zipArchive.CreateEntry("registroDeAlteracoes.txt");
+                using (Stream entryStream = entryRegistro.Open())
+                {
+                    // escreve os dados do arquivo de saída da Resposta no fluxo de dados
+                    entryStream.Write(arquivoRegistroDeAlteracoes, 0, arquivoRegistroDeAlteracoes.Length);
                 }
             }
 
