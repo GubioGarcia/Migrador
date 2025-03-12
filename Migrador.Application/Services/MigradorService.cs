@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -80,14 +81,21 @@ namespace Migrador.Application.Services
                                 if (itemResposta["NumEtapa"] == numEtapa)
                                 {
                                     if (itemResposta.ContainsKey("Legenda") && itemResposta["Legenda"].Length > 20)
-                                        itemResposta["Legenda"] = itemResposta["Legenda"][..20];
+                                    {
+                                        if (itemResposta["Legenda"] == "Falar com um atendente")
+                                            itemResposta["Legenda"] = "Falar com atendente";
+                                        else if (itemResposta["Legenda"] == "Finalizar o atendimento" || itemResposta["Legenda"] == "Finalizar atendimento")
+                                            itemResposta["Legenda"] = "Encerrar atendimento";
+                                        else
+                                            itemResposta["Legenda"] = itemResposta["Legenda"][..20];
+                                    }
                                 }
                             }
 
                             // registra alteração da etapa
                             registrosAlteracoes.Add("Etapa: " + numEtapa);
                         }
-                        else if (countRespostas > 3/* && countRespostas <= 10*/)
+                        else if (countRespostas > 3)
                         {
                             // Aplica valores das propriedades obrigatórias da lista para a Etapa
                             itemEtapa["TipoResposta"] = "10";
@@ -123,6 +131,81 @@ namespace Migrador.Application.Services
 
                             // registra alteração da etapa
                             registrosAlteracoes.Add("Etapa: " + numEtapa);
+                        }
+                    }
+                }
+                else if (itemEtapa["TipoEtapa"] == "2")
+                {
+                    // trata as chamadas de API's que possua retorno do tipo 3 (exibe lista de opções ao cliente)
+                    if (itemEtapa["RetornoAPI"] == "3")
+                    {
+                        // coleta o ID da consulta SQL UAU
+                        var bodyApi = JObject.Parse(itemEtapa["IntegracaoAPI"]);
+                        int id = (int)bodyApi["Id"];
+
+                        if (id == 1661 || id == 1662)
+                        {
+                            itemEtapa["ListaDescricao"] = "{@[Identificador_unid]} - {@[Descr_obr]}";
+                            itemEtapa["ListaDescricao@type"] = "String";
+                            itemEtapa["ListaSessao"] = "{@[Contratos]}";
+                            itemEtapa["ListaSessao@type"] = "String";
+                            itemEtapa["ListaTextoObjetoAPI"] = "Contrato-{@[NumVend_Itv]}";
+                            itemEtapa["ListaTextoObjetoAPI@type"] = "String";
+                            itemEtapa["ListaTitulo"] = "Ver contratos";
+                            itemEtapa["ListaTitulo@type"] = "String";
+                            itemEtapa["TextoObjetoAPI"] = "{@[Descr_obr]}\r\n    {@[Identificador_unid]} (contrato-{@[NumVend_Itv]})";
+                            itemEtapa["TextoObjetoAPI@type"] = "String";
+                        }
+                        else if (id == 1676)
+                        {
+                            itemEtapa["ListaDescricao"] = "{@[Identificador_unid]} - {@[descr_obr]}";
+                            itemEtapa["ListaDescricao@type"] = "String";
+                            itemEtapa["ListaSessao"] = "{@[Contratos]}";
+                            itemEtapa["ListaSessao@type"] = "String";
+                            itemEtapa["ListaTextoObjetoAPI"] = "Contrato-{@[Num_ven]}";
+                            itemEtapa["ListaTextoObjetoAPI@type"] = "String";
+                            itemEtapa["ListaTitulo"] = "Ver contratos";
+                            itemEtapa["ListaTitulo@type"] = "String";
+                            itemEtapa["TextoObjetoAPI"] = "{@[descr_obr]}\r\n    {@[Identificador_unid]} (contrato-{@[Num_ven]})";
+                            itemEtapa["TextoObjetoAPI@type"] = "String";
+                        }
+                        else if (id == 1691)
+                        {
+                            itemEtapa["ListaDescricao"] = "Valor: {@[ValDoc_Bol]} - Vencimento: {@[DataVenc_bol]}";
+                            itemEtapa["ListaDescricao@type"] = "String";
+                            itemEtapa["ListaSessao"] = "{@[Boletos disponíveis]}";
+                            itemEtapa["ListaSessao@type"] = "String";
+                            itemEtapa["ListaTextoObjetoAPI"] = "Boleto: {@[Banco_Bol]}-{@[SeuNum_Bol]}";
+                            itemEtapa["ListaTextoObjetoAPI@type"] = "String";
+                            itemEtapa["ListaTitulo"] = "Boletos";
+                            itemEtapa["ListaTitulo@type"] = "String";
+                            itemEtapa["TextoObjetoAPI"] = "{@[DataVenc_bol]} - {@[ValDoc_Bol]}\r\n    Boleto Nº: {@[Banco_Bol]}-{@[SeuNum_Bol]}";
+                            itemEtapa["TextoObjetoAPI@type"] = "String";
+                            itemEtapa["Formato"] = "DT-d]@[N-C]@[]@[";
+                            itemEtapa["Formato@type"] = "String";
+                            itemEtapa["ListaDescricaoFormato"] = "N-C]@[DT-d";
+                            itemEtapa["ListaDescricaoFormato@type"] = "String";
+                            itemEtapa["ListaFormato"] = "]@[";
+                            itemEtapa["ListaFormato@type"] = "String";
+                        }
+                        else if (itemEtapa["UrlAPI"] == "https://api-iterup.azurewebsites.net/api/AnteciparParcelasUAU")
+                        {
+                            itemEtapa["ListaDescricao"] = "Valor: R$ {@[Valor_Prc]} - Vencimento: {@[Data_Prc]}";
+                            itemEtapa["ListaDescricao@type"] = "String";
+                            itemEtapa["ListaSessao"] = "{@[Parcelas]}";
+                            itemEtapa["ListaSessao@type"] = "String";
+                            itemEtapa["ListaTextoObjetoAPI"] = "{@[Tipo_reaj]}/{@[NumParc_reaj]}";
+                            itemEtapa["ListaTextoObjetoAPI@type"] = "String";
+                            itemEtapa["ListaTitulo"] = "Ver parcelas";
+                            itemEtapa["ListaTitulo@type"] = "String";
+                            itemEtapa["TextoObjetoAPI"] = "{@[Tipo_reaj]}/{@[NumParc_reaj]}: {@[Data_Prc]} - R$ {@[Valor_Prc]}";
+                            itemEtapa["TextoObjetoAPI@type"] = "String";
+                            itemEtapa["Formato"] = "]@[]@[DT-d]@[N-n";
+                            itemEtapa["Formato@type"] = "String";
+                            itemEtapa["ListaDescricaoFormato"] = "N-C]@[DT-d";
+                            itemEtapa["ListaDescricaoFormato@type"] = "String";
+                            itemEtapa["ListaFormato"] = "]@[";
+                            itemEtapa["ListaFormato@type"] = "String";
                         }
                     }
                 }

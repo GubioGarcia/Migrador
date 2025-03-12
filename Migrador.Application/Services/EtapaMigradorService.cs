@@ -11,7 +11,9 @@ namespace Migrador.Application.Services
         // Método para adicionar colunas obrigatórias
         protected override void AdicionarColunasObrigatorias(Dictionary<string, string> item)
         {
-            string[] colunasObrigatorias = ["ListaHeader", "ListaHeader@type", "ListaSessao", "ListaSessao@type", "ListaTitulo", "ListaTitulo@type", "QtdeOpcoes", "QtdeOpcoes@type"];
+            string[] colunasObrigatorias = ["ListaHeader", "ListaHeader@type", "ListaSessao", "ListaSessao@type", "ListaTitulo", "ListaTitulo@type", "QtdeOpcoes", "QtdeOpcoes@type",
+                                            "ListaDescricao", "ListaDescricao@type", "ListaDescricaoFormato", "ListaDescricaoFormato@type", "ListaFormato", "ListaFormato@type",
+                                            "ListaTextoObjetoAPI", "ListaTextoObjetoAPI@type"];
             foreach (var coluna in colunasObrigatorias)
             {
                 if (!item.ContainsKey(coluna)) item[coluna] = "";
