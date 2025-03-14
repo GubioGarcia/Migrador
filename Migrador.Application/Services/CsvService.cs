@@ -33,7 +33,7 @@ namespace Migrador.Application.Services
             while (await csv.ReadAsync())
             {
                 // lê uma linha do CSV como um objeto dinâmico e a converte para um dicionário
-                var row = csv.GetRecord<dynamic>() as IDictionary<string, object>;
+                IDictionary<string, object>? row = csv.GetRecord<dynamic>() as IDictionary<string, object>;
                 // converte o objeto dinâmico para um dicionário de string e adiciona à lista
                 registros.Add(row.ToDictionary(k => k.Key, v => v.Value?.ToString() ?? ""));
             }

@@ -23,6 +23,10 @@ namespace Migrador.Application.Services
             List<Dictionary<string, string>> dadosEtapa = await CsvService.LerCsvAsync(arquivoEtapa);
             List<Dictionary<string, string>> dadosResposta = await CsvService.LerCsvAsync(arquivoResposta);
 
+            // Extrai todos os valores de uma propriedade das listas e verifica igualdade dos elementos
+            ManipularArquivoService.ValidarIgualdadeDoValorDeUmaPropriedade(dadosEtapa, dadosResposta, "PartitionKey");
+            ManipularArquivoService.ValidarIgualdadeDoValorDeUmaPropriedade(dadosEtapa, dadosResposta, "NumDialogo");
+
             List<Dictionary<string, string>> dadosProcessadosEtapa = _etapaMigradorService.ConverterDadosIniciaisDosRegistros(dadosEtapa, numDialogo);
             List<Dictionary<string, string>> dadosProcessadosResposta = _respostaMigradorService.ConverterDadosIniciaisDosRegistros(dadosResposta, numDialogo);
 
@@ -74,6 +78,22 @@ namespace Migrador.Application.Services
 
             // converte o contrúdo do MemoryStream para um array de bytes e retorna
             return memoryStream.ToArray();
+        }
+
+        // Extrai todos os valores de uma propriedade das listas e verifica igualdade dos elementos
+        private static void ValidarIgualdadeDoValorDeUmaPropriedade(List<Dictionary<string, string>> dadosEtapa, List<Dictionary<string, string>> dadosResposta, string propriedade)
+        {
+            // Leva em consideração a ordem dos elementos
+            List<string> partitionKeysEtapa = dadosEtapa.Where(d => d.ContainsKey(propriedade)).Select(d => d[propriedade]).Distinct().ToList();
+            List<string> partitionKeysResposta = dadosResposta.Where(d => d.ContainsKey(propriedade)).Select(d => d[propriedade]).Distinct().ToList();
+            if (!partitionKeysEtapa.SequenceEqual(partitionKeysResposta))
+                throw new Exception($"Os arquivos de entrada possuem registros com '{propriedade}' diferentes.");
+
+            // Acesso mais rápido. Ordem não é importante
+            /*HashSet<string> partitionKeysEtapa = new(dadosEtapa.Where(d => d.ContainsKey(propriedade)).Select(d => d[propriedade]));
+            HashSet<string> partitionKeysResposta = new(dadosResposta.Where(d => d.ContainsKey(propriedade)).Select(d => d[propriedade]));
+            if (!partitionKeysEtapa.IsSubsetOf(partitionKeysResposta) || !partitionKeysResposta.IsSubsetOf(partitionKeysEtapa))
+                throw new Exception($"Os arquivos de entrada possuem registros com '{propriedade}' diferentes.");*/
         }
     }
 }

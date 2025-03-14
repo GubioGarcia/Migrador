@@ -1,9 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Migrador.Application.Services
 {
@@ -139,73 +134,103 @@ namespace Migrador.Application.Services
                     // trata as chamadas de API's que possua retorno do tipo 3 (exibe lista de opções ao cliente)
                     if (itemEtapa["RetornoAPI"] == "3")
                     {
-                        // coleta o ID da consulta SQL UAU
-                        var bodyApi = JObject.Parse(itemEtapa["IntegracaoAPI"]);
-                        int id = (int)bodyApi["Id"];
+                        itemEtapa["TipoResposta"] = "10";
 
-                        if (id == 1661 || id == 1662)
+                        // coleta o ID da consulta SQL UAU
+                        if (itemEtapa["UrlAPI"].Contains("/RotinasGerais/ExecutarConsultaGeral"))
                         {
-                            itemEtapa["ListaDescricao"] = "{@[Identificador_unid]} - {@[Descr_obr]}";
-                            itemEtapa["ListaDescricao@type"] = "String";
-                            itemEtapa["ListaSessao"] = "{@[Contratos]}";
-                            itemEtapa["ListaSessao@type"] = "String";
-                            itemEtapa["ListaTextoObjetoAPI"] = "Contrato-{@[NumVend_Itv]}";
-                            itemEtapa["ListaTextoObjetoAPI@type"] = "String";
-                            itemEtapa["ListaTitulo"] = "Ver contratos";
-                            itemEtapa["ListaTitulo@type"] = "String";
-                            itemEtapa["TextoObjetoAPI"] = "{@[Descr_obr]}\r\n    {@[Identificador_unid]} (contrato-{@[NumVend_Itv]})";
-                            itemEtapa["TextoObjetoAPI@type"] = "String";
+                            JObject bodyApi = JObject.Parse(itemEtapa["IntegracaoAPI"]);
+                            int id = (int)bodyApi["Id"];
+
+                            // Trata consulta geral UAU para listagem de contratos
+                            if (id == 1661 || id == 1662)
+                            {
+                                itemEtapa["ListaDescricao"] = "{@[Identificador_unid]} - {@[Descr_obr]}";
+                                itemEtapa["ListaDescricao@type"] = "String";
+                                itemEtapa["ListaSessao"] = "{@[Contratos]}";
+                                itemEtapa["ListaSessao@type"] = "String";
+                                itemEtapa["ListaTextoObjetoAPI"] = "Contrato-{@[NumVend_Itv]}";
+                                itemEtapa["ListaTextoObjetoAPI@type"] = "String";
+                                itemEtapa["ListaTitulo"] = "Ver contratos";
+                                itemEtapa["ListaTitulo@type"] = "String";
+                                itemEtapa["TextoObjetoAPI"] = "{@[Descr_obr]}\r\n    {@[Identificador_unid]} (contrato-{@[NumVend_Itv]})";
+                                itemEtapa["TextoObjetoAPI@type"] = "String";
+                            }
+                            // Trata consulta geral UAU para 'Busca contratos que tenham boletos gerados'
+                            else if (id == 1676)
+                            {
+                                itemEtapa["ListaDescricao"] = "{@[Identificador_unid]} - {@[descr_obr]}";
+                                itemEtapa["ListaDescricao@type"] = "String";
+                                itemEtapa["ListaSessao"] = "{@[Contratos]}";
+                                itemEtapa["ListaSessao@type"] = "String";
+                                itemEtapa["ListaTextoObjetoAPI"] = "Contrato-{@[Num_ven]}";
+                                itemEtapa["ListaTextoObjetoAPI@type"] = "String";
+                                itemEtapa["ListaTitulo"] = "Ver contratos";
+                                itemEtapa["ListaTitulo@type"] = "String";
+                                itemEtapa["TextoObjetoAPI"] = "{@[descr_obr]}\r\n    {@[Identificador_unid]} (contrato-{@[Num_ven]})";
+                                itemEtapa["TextoObjetoAPI@type"] = "String";
+                            }
+                            // Trata consulta geral UAU para 'Busca o último boleto gerado'
+                            else if (id == 1691)
+                            {
+                                itemEtapa["ListaDescricao"] = "Valor: {@[ValDoc_Bol]} - Vencimento: {@[DataVenc_bol]}";
+                                itemEtapa["ListaDescricao@type"] = "String";
+                                itemEtapa["ListaSessao"] = "{@[Boletos disponíveis]}";
+                                itemEtapa["ListaSessao@type"] = "String";
+                                itemEtapa["ListaTextoObjetoAPI"] = "Boleto: {@[Banco_Bol]}-{@[SeuNum_Bol]}";
+                                itemEtapa["ListaTextoObjetoAPI@type"] = "String";
+                                itemEtapa["ListaTitulo"] = "Boletos";
+                                itemEtapa["ListaTitulo@type"] = "String";
+                                itemEtapa["TextoObjetoAPI"] = "{@[DataVenc_bol]} - {@[ValDoc_Bol]}\r\n    Boleto Nº: {@[Banco_Bol]}-{@[SeuNum_Bol]}";
+                                itemEtapa["TextoObjetoAPI@type"] = "String";
+                                itemEtapa["Formato"] = "DT-d]@[N-C]@[]@[";
+                                itemEtapa["Formato@type"] = "String";
+                                itemEtapa["ListaDescricaoFormato"] = "N-C]@[DT-d";
+                                itemEtapa["ListaDescricaoFormato@type"] = "String";
+                                itemEtapa["ListaFormato"] = "]@[";
+                                itemEtapa["ListaFormato@type"] = "String";
+                            }
                         }
-                        else if (id == 1676)
+                        else
                         {
-                            itemEtapa["ListaDescricao"] = "{@[Identificador_unid]} - {@[descr_obr]}";
-                            itemEtapa["ListaDescricao@type"] = "String";
-                            itemEtapa["ListaSessao"] = "{@[Contratos]}";
-                            itemEtapa["ListaSessao@type"] = "String";
-                            itemEtapa["ListaTextoObjetoAPI"] = "Contrato-{@[Num_ven]}";
-                            itemEtapa["ListaTextoObjetoAPI@type"] = "String";
-                            itemEtapa["ListaTitulo"] = "Ver contratos";
-                            itemEtapa["ListaTitulo@type"] = "String";
-                            itemEtapa["TextoObjetoAPI"] = "{@[descr_obr]}\r\n    {@[Identificador_unid]} (contrato-{@[Num_ven]})";
-                            itemEtapa["TextoObjetoAPI@type"] = "String";
-                        }
-                        else if (id == 1691)
-                        {
-                            itemEtapa["ListaDescricao"] = "Valor: {@[ValDoc_Bol]} - Vencimento: {@[DataVenc_bol]}";
-                            itemEtapa["ListaDescricao@type"] = "String";
-                            itemEtapa["ListaSessao"] = "{@[Boletos disponíveis]}";
-                            itemEtapa["ListaSessao@type"] = "String";
-                            itemEtapa["ListaTextoObjetoAPI"] = "Boleto: {@[Banco_Bol]}-{@[SeuNum_Bol]}";
-                            itemEtapa["ListaTextoObjetoAPI@type"] = "String";
-                            itemEtapa["ListaTitulo"] = "Boletos";
-                            itemEtapa["ListaTitulo@type"] = "String";
-                            itemEtapa["TextoObjetoAPI"] = "{@[DataVenc_bol]} - {@[ValDoc_Bol]}\r\n    Boleto Nº: {@[Banco_Bol]}-{@[SeuNum_Bol]}";
-                            itemEtapa["TextoObjetoAPI@type"] = "String";
-                            itemEtapa["Formato"] = "DT-d]@[N-C]@[]@[";
-                            itemEtapa["Formato@type"] = "String";
-                            itemEtapa["ListaDescricaoFormato"] = "N-C]@[DT-d";
-                            itemEtapa["ListaDescricaoFormato@type"] = "String";
-                            itemEtapa["ListaFormato"] = "]@[";
-                            itemEtapa["ListaFormato@type"] = "String";
-                        }
-                        else if (itemEtapa["UrlAPI"] == "https://api-iterup.azurewebsites.net/api/AnteciparParcelasUAU")
-                        {
-                            itemEtapa["ListaDescricao"] = "Valor: R$ {@[Valor_Prc]} - Vencimento: {@[Data_Prc]}";
-                            itemEtapa["ListaDescricao@type"] = "String";
-                            itemEtapa["ListaSessao"] = "{@[Parcelas]}";
-                            itemEtapa["ListaSessao@type"] = "String";
-                            itemEtapa["ListaTextoObjetoAPI"] = "{@[Tipo_reaj]}/{@[NumParc_reaj]}";
-                            itemEtapa["ListaTextoObjetoAPI@type"] = "String";
-                            itemEtapa["ListaTitulo"] = "Ver parcelas";
-                            itemEtapa["ListaTitulo@type"] = "String";
-                            itemEtapa["TextoObjetoAPI"] = "{@[Tipo_reaj]}/{@[NumParc_reaj]}: {@[Data_Prc]} - R$ {@[Valor_Prc]}";
-                            itemEtapa["TextoObjetoAPI@type"] = "String";
-                            itemEtapa["Formato"] = "]@[]@[DT-d]@[N-n";
-                            itemEtapa["Formato@type"] = "String";
-                            itemEtapa["ListaDescricaoFormato"] = "N-C]@[DT-d";
-                            itemEtapa["ListaDescricaoFormato@type"] = "String";
-                            itemEtapa["ListaFormato"] = "]@[";
-                            itemEtapa["ListaFormato@type"] = "String";
+                            // Trata API Iterup de listagem de parcelas do UAU
+                            if (itemEtapa["UrlAPI"] == "https://api-iterup.azurewebsites.net/api/AnteciparParcelasUAU")
+                            {
+                                itemEtapa["ListaDescricao"] = "Valor: R$ {@[Valor_Prc]} - Vencimento: {@[Data_Prc]}";
+                                itemEtapa["ListaDescricao@type"] = "String";
+                                itemEtapa["ListaSessao"] = "{@[Parcelas]}";
+                                itemEtapa["ListaSessao@type"] = "String";
+                                itemEtapa["ListaTextoObjetoAPI"] = "{@[Tipo_reaj]}/{@[NumParc_reaj]}";
+                                itemEtapa["ListaTextoObjetoAPI@type"] = "String";
+                                itemEtapa["ListaTitulo"] = "Ver parcelas";
+                                itemEtapa["ListaTitulo@type"] = "String";
+                                itemEtapa["TextoObjetoAPI"] = "{@[Tipo_reaj]}/{@[NumParc_reaj]}: {@[Data_Prc]} - R$ {@[Valor_Prc]}";
+                                itemEtapa["TextoObjetoAPI@type"] = "String";
+                                itemEtapa["Formato"] = "]@[]@[DT-d]@[N-n";
+                                itemEtapa["Formato@type"] = "String";
+                                itemEtapa["ListaDescricaoFormato"] = "N-C]@[DT-d";
+                                itemEtapa["ListaDescricaoFormato@type"] = "String";
+                                itemEtapa["ListaFormato"] = "]@[";
+                                itemEtapa["ListaFormato@type"] = "String";
+                            }
+                            // Trata demais API's como informações padrão a serem alteradas pelo usuário já no arquivo de retorno
+                            else
+                            {
+                                itemEtapa["ListaDescricao"] = itemEtapa["TextoObjetoAPI"];
+                                itemEtapa["ListaDescricao@type"] = "String";
+                                itemEtapa["ListaSessao"] = "{@[ATENCAO_MUDAR]}";
+                                itemEtapa["ListaSessao@type"] = "String";
+                                itemEtapa["ListaTextoObjetoAPI"] = "{@[ATENCAO_MUDAR]}";
+                                itemEtapa["ListaTextoObjetoAPI@type"] = "String";
+                                itemEtapa["ListaTitulo"] = "ATENCAO_MUDAR";
+                                itemEtapa["ListaTitulo@type"] = "String";
+                                itemEtapa["Formato"] = "ATENCAO_MUDAR";
+                                itemEtapa["Formato@type"] = "String";
+                                itemEtapa["ListaDescricaoFormato"] = "ATENCAO_MUDAR";
+                                itemEtapa["ListaDescricaoFormato@type"] = "String";
+                                itemEtapa["ListaFormato"] = "ATENCAO_MUDAR";
+                                itemEtapa["ListaFormato@type"] = "String";
+                            }
                         }
                     }
                 }
