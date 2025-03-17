@@ -160,6 +160,8 @@ namespace Migrador.Application.Services
                 itemRespostaVoltar.Add("NumEtapa@type", "Int32");
                 itemRespostaVoltar.Add("NumProxEtapa", "11");
                 itemRespostaVoltar.Add("NumProxEtapa@type", "Int32");
+                itemRespostaVoltar.Add("NumProxEtapaWpp", "11");
+                itemRespostaVoltar.Add("NumProxEtapaWpp@type", "Int32");
                 itemRespostaVoltar.Add("NumResposta", "1");
                 itemRespostaVoltar.Add("NumResposta@type", "Int32");
                 itemRespostaVoltar.Add("Ordem", "1");
