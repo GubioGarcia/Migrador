@@ -147,7 +147,34 @@ namespace Migrador.Application.Services
             // trata as chamadas de API's que possua retorno do tipo 3 (exibe lista de opções ao cliente)
             if (itemEtapa["RetornoAPI"] == "3")
             {
+             #region 'Registra opção Voltar para a lista de retorno da API'
                 itemEtapa["TipoResposta"] = "10";
+                Dictionary<String, string> itemRespostaVoltar = new();
+                itemRespostaVoltar.Add("PartitionKey", itemEtapa["PartitionKey"]);
+                itemRespostaVoltar.Add("RowKey", itemEtapa["NumDialogo"] + "-" + itemEtapa["NumEtapa"] + "-1");
+                itemRespostaVoltar.Add("Legenda", "Voltar");
+                itemRespostaVoltar.Add("Lengenda@type", "String");
+                itemRespostaVoltar.Add("NumDialogo", itemEtapa["NumDialogo"]);
+                itemRespostaVoltar.Add("NumDialogo@type", "Int32");
+                itemRespostaVoltar.Add("NumEtapa", itemEtapa["NumEtapa"]);
+                itemRespostaVoltar.Add("NumEtapa@type", "Int32");
+                itemRespostaVoltar.Add("NumProxEtapa", "11");
+                itemRespostaVoltar.Add("NumProxEtapa@type", "Int32");
+                itemRespostaVoltar.Add("NumResposta", "1");
+                itemRespostaVoltar.Add("NumResposta@type", "Int32");
+                itemRespostaVoltar.Add("Ordem", "1");
+                itemRespostaVoltar.Add("Ordem@type", "Int32");
+                itemRespostaVoltar.Add("PularValidacao", "false");
+                itemRespostaVoltar.Add("PularValidacao@type", "Boolean");
+                itemRespostaVoltar.Add("ValorArmazenado", "Voltar");
+                itemRespostaVoltar.Add("ValorArmazenado@type", "String");
+                itemRespostaVoltar.Add("ListaDescricao", "Voltar");
+                itemRespostaVoltar.Add("ListaDescricao@type", "String");
+                itemRespostaVoltar.Add("ListaSessao", "1");
+                itemRespostaVoltar.Add("ListaSessao@type", "Int32");
+
+                resposta.Add(itemRespostaVoltar);
+             #endregion
 
                 // coleta o ID da consulta SQL UAU
                 if (itemEtapa["UrlAPI"].Contains("/RotinasGerais/ExecutarConsultaGeral"))
