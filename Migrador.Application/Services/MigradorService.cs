@@ -143,42 +143,12 @@ namespace Migrador.Application.Services
 
         private static void ConverterRegistroDoTipoApiComRetornoDeLista(Dictionary<string, string> itemEtapa, List<Dictionary<string, string>> resposta, List<string> registrosAlteracoes)
         {
-
-            // trata as chamadas de API's que possua retorno do tipo 3 (exibe lista de opções ao cliente)
-            if (itemEtapa["RetornoAPI"] == "3")
+            if (itemEtapa["RetornoAPI"] == "3" || itemEtapa["RetornoAPI"] == "0")
             {
-             #region 'Registra opção Voltar para a lista de retorno da API'
-                itemEtapa["TipoResposta"] = "10";
-                Dictionary<String, string> itemRespostaVoltar = new();
-                itemRespostaVoltar.Add("PartitionKey", itemEtapa["PartitionKey"]);
-                itemRespostaVoltar.Add("RowKey", itemEtapa["NumDialogo"] + "-" + itemEtapa["NumEtapa"] + "-1");
-                itemRespostaVoltar.Add("Legenda", "Voltar");
-                itemRespostaVoltar.Add("Lengenda@type", "String");
-                itemRespostaVoltar.Add("NumDialogo", itemEtapa["NumDialogo"]);
-                itemRespostaVoltar.Add("NumDialogo@type", "Int32");
-                itemRespostaVoltar.Add("NumEtapa", itemEtapa["NumEtapa"]);
-                itemRespostaVoltar.Add("NumEtapa@type", "Int32");
-                itemRespostaVoltar.Add("NumProxEtapa", "11");
-                itemRespostaVoltar.Add("NumProxEtapa@type", "Int32");
-                itemRespostaVoltar.Add("NumProxEtapaWpp", "11");
-                itemRespostaVoltar.Add("NumProxEtapaWpp@type", "Int32");
-                itemRespostaVoltar.Add("NumResposta", "1");
-                itemRespostaVoltar.Add("NumResposta@type", "Int32");
-                itemRespostaVoltar.Add("Ordem", "1");
-                itemRespostaVoltar.Add("Ordem@type", "Int32");
-                itemRespostaVoltar.Add("PularValidacao", "false");
-                itemRespostaVoltar.Add("PularValidacao@type", "Boolean");
-                itemRespostaVoltar.Add("ValorArmazenado", "Voltar");
-                itemRespostaVoltar.Add("ValorArmazenado@type", "String");
-                itemRespostaVoltar.Add("ListaDescricao", "Voltar");
-                itemRespostaVoltar.Add("ListaDescricao@type", "String");
-                itemRespostaVoltar.Add("ListaSessao", "1");
-                itemRespostaVoltar.Add("ListaSessao@type", "Int32");
+                //Registra opção Voltar para a lista de retorno da API'
+                MigradorService.CriarOpcaoVoltarParaEtapaApiComRetornoDeLista(itemEtapa, resposta);
 
-                resposta.Add(itemRespostaVoltar);
-             #endregion
-
-                // coleta o ID da consulta SQL UAU
+                // Trata a listagem vindas das api's de consulta geral do UAU
                 if (itemEtapa["UrlAPI"].Contains("/RotinasGerais/ExecutarConsultaGeral"))
                 {
                     JObject bodyApi = JObject.Parse(itemEtapa["IntegracaoAPI"]);
@@ -233,51 +203,114 @@ namespace Migrador.Application.Services
                         itemEtapa["ListaFormato@type"] = "String";
                     }
                 }
+                // Trata a listagem de contratos através da api /Venda/ConsultarEmpreendimentosCliente
+                else if (itemEtapa["UrlAPI"].Contains("/Venda/ConsultarEmpreendimentosCliente"))
+                {
+                    itemEtapa["ListaDescricao"] = "{@[Identificador_unid]} - {@[Descr_obr]}";
+                    itemEtapa["ListaDescricao@type"] = "String";
+                    itemEtapa["ListaSessao"] = "{@[Contratos]}";
+                    itemEtapa["ListaSessao@type"] = "String";
+                    itemEtapa["ListaTextoObjetoAPI"] = "Contrato-{@[Num_Ven]}";
+                    itemEtapa["ListaTextoObjetoAPI@type"] = "String";
+                    itemEtapa["ListaTitulo"] = "Ver contratos";
+                    itemEtapa["ListaTitulo@type"] = "String";
+                    itemEtapa["TextoObjetoAPI"] = "{@[Descr_obr]}\r\n    {@[Identificador_unid]} (contrato-{@[Num_Ven]})";
+                    itemEtapa["TextoObjetoAPI@type"] = "String";
+                }
+                // Trata a listagem de boletos através da api /BoletoServices/ConsultarBoletosReimpressao
+                else if (itemEtapa["UrlAPI"].Contains("/BoletoServices/ConsultarBoletosReimpressao"))
+                {
+                    itemEtapa["ListaDescricao"] = "Valor: {@[ValDoc_Bol]} - Vencimento: {@[DataVenc_bol]}";
+                    itemEtapa["ListaDescricao@type"] = "String";
+                    itemEtapa["ListaSessao"] = "{@[Boletos disponíveis]}";
+                    itemEtapa["ListaSessao@type"] = "String";
+                    itemEtapa["ListaTextoObjetoAPI"] = "Boleto: {@[Banco_Bol]}-{@[SeuNum_Bol]}";
+                    itemEtapa["ListaTextoObjetoAPI@type"] = "String";
+                    itemEtapa["ListaTitulo"] = "Boletos";
+                    itemEtapa["ListaTitulo@type"] = "String";
+                    itemEtapa["TextoObjetoAPI"] = "{@[DataVenc_bol]} - {@[ValDoc_Bol]}\r\n    Boleto Nº: {@[Banco_Bol]}-{@[SeuNum_Bol]}";
+                    itemEtapa["TextoObjetoAPI@type"] = "String";
+                    itemEtapa["Formato"] = "DT-d]@[N-C]@[]@[";
+                    itemEtapa["Formato@type"] = "String";
+                    itemEtapa["ListaDescricaoFormato"] = "N-C]@[DT-d";
+                    itemEtapa["ListaDescricaoFormato@type"] = "String";
+                    itemEtapa["ListaFormato"] = "]@[";
+                    itemEtapa["ListaFormato@type"] = "String";
+                }
+                // Trata API Iterup de listagem de parcelas do UAU
+                else if (itemEtapa["UrlAPI"] == "https://api-iterup.azurewebsites.net/api/AnteciparParcelasUAU")
+                {
+                    itemEtapa["ListaDescricao"] = "Valor: R$ {@[Valor_Prc]} - Vencimento: {@[Data_Prc]}";
+                    itemEtapa["ListaDescricao@type"] = "String";
+                    itemEtapa["ListaSessao"] = "{@[Parcelas]}";
+                    itemEtapa["ListaSessao@type"] = "String";
+                    itemEtapa["ListaTextoObjetoAPI"] = "{@[Tipo_reaj]}/{@[NumParc_reaj]}";
+                    itemEtapa["ListaTextoObjetoAPI@type"] = "String";
+                    itemEtapa["ListaTitulo"] = "Ver parcelas";
+                    itemEtapa["ListaTitulo@type"] = "String";
+                    itemEtapa["TextoObjetoAPI"] = "{@[Tipo_reaj]}/{@[NumParc_reaj]}: {@[Data_Prc]} - R$ {@[Valor_Prc]}";
+                    itemEtapa["TextoObjetoAPI@type"] = "String";
+                    itemEtapa["Formato"] = "]@[]@[DT-d]@[N-n";
+                    itemEtapa["Formato@type"] = "String";
+                    itemEtapa["ListaDescricaoFormato"] = "N-C]@[DT-d";
+                    itemEtapa["ListaDescricaoFormato@type"] = "String";
+                    itemEtapa["ListaFormato"] = "]@[";
+                    itemEtapa["ListaFormato@type"] = "String";
+                }
+                // Trata demais API's como informações padrão a serem alteradas pelo usuário já no arquivo de retorno
                 else
                 {
-                    // Trata API Iterup de listagem de parcelas do UAU
-                    if (itemEtapa["UrlAPI"] == "https://api-iterup.azurewebsites.net/api/AnteciparParcelasUAU")
-                    {
-                        itemEtapa["ListaDescricao"] = "Valor: R$ {@[Valor_Prc]} - Vencimento: {@[Data_Prc]}";
-                        itemEtapa["ListaDescricao@type"] = "String";
-                        itemEtapa["ListaSessao"] = "{@[Parcelas]}";
-                        itemEtapa["ListaSessao@type"] = "String";
-                        itemEtapa["ListaTextoObjetoAPI"] = "{@[Tipo_reaj]}/{@[NumParc_reaj]}";
-                        itemEtapa["ListaTextoObjetoAPI@type"] = "String";
-                        itemEtapa["ListaTitulo"] = "Ver parcelas";
-                        itemEtapa["ListaTitulo@type"] = "String";
-                        itemEtapa["TextoObjetoAPI"] = "{@[Tipo_reaj]}/{@[NumParc_reaj]}: {@[Data_Prc]} - R$ {@[Valor_Prc]}";
-                        itemEtapa["TextoObjetoAPI@type"] = "String";
-                        itemEtapa["Formato"] = "]@[]@[DT-d]@[N-n";
-                        itemEtapa["Formato@type"] = "String";
-                        itemEtapa["ListaDescricaoFormato"] = "N-C]@[DT-d";
-                        itemEtapa["ListaDescricaoFormato@type"] = "String";
-                        itemEtapa["ListaFormato"] = "]@[";
-                        itemEtapa["ListaFormato@type"] = "String";
-                    }
-                    // Trata demais API's como informações padrão a serem alteradas pelo usuário já no arquivo de retorno
-                    else
-                    {
-                        itemEtapa["ListaDescricao"] = itemEtapa["TextoObjetoAPI"];
-                        itemEtapa["ListaDescricao@type"] = "String";
-                        itemEtapa["ListaSessao"] = "{@[ATENCAO_MUDAR]}";
-                        itemEtapa["ListaSessao@type"] = "String";
-                        itemEtapa["ListaTextoObjetoAPI"] = "{@[ATENCAO_MUDAR]}";
-                        itemEtapa["ListaTextoObjetoAPI@type"] = "String";
-                        itemEtapa["ListaTitulo"] = "ATENCAO_MUDAR";
-                        itemEtapa["ListaTitulo@type"] = "String";
-                        itemEtapa["Formato"] = "ATENCAO_MUDAR";
-                        itemEtapa["Formato@type"] = "String";
-                        itemEtapa["ListaDescricaoFormato"] = "ATENCAO_MUDAR";
-                        itemEtapa["ListaDescricaoFormato@type"] = "String";
-                        itemEtapa["ListaFormato"] = "ATENCAO_MUDAR";
-                        itemEtapa["ListaFormato@type"] = "String";
-                    }
+                    itemEtapa["ListaDescricao"] = itemEtapa["TextoObjetoAPI"];
+                    itemEtapa["ListaDescricao@type"] = "String";
+                    itemEtapa["ListaSessao"] = "{@[ATENCAO_MUDAR]}";
+                    itemEtapa["ListaSessao@type"] = "String";
+                    itemEtapa["ListaTextoObjetoAPI"] = "{@[ATENCAO_MUDAR]}";
+                    itemEtapa["ListaTextoObjetoAPI@type"] = "String";
+                    itemEtapa["ListaTitulo"] = "ATENCAO_MUDAR";
+                    itemEtapa["ListaTitulo@type"] = "String";
+                    itemEtapa["Formato"] = "ATENCAO_MUDAR";
+                    itemEtapa["Formato@type"] = "String";
+                    itemEtapa["ListaDescricaoFormato"] = "ATENCAO_MUDAR";
+                    itemEtapa["ListaDescricaoFormato@type"] = "String";
+                    itemEtapa["ListaFormato"] = "ATENCAO_MUDAR";
+                    itemEtapa["ListaFormato@type"] = "String";
                 }
 
                 // registra alteração da etapa
                 registrosAlteracoes.Add("Etapa: " + itemEtapa["NumEtapa"]);
             }
+        }
+
+        private static void CriarOpcaoVoltarParaEtapaApiComRetornoDeLista(Dictionary<string, string> itemEtapa, List<Dictionary<string, string>> resposta)
+        {
+            itemEtapa["TipoResposta"] = "10";
+            Dictionary<String, string> itemRespostaVoltar = new();
+            itemRespostaVoltar.Add("PartitionKey", itemEtapa["PartitionKey"]);
+            itemRespostaVoltar.Add("RowKey", itemEtapa["NumDialogo"] + "-" + itemEtapa["NumEtapa"] + "-1");
+            itemRespostaVoltar.Add("Legenda", "Voltar");
+            itemRespostaVoltar.Add("Lengenda@type", "String");
+            itemRespostaVoltar.Add("NumDialogo", itemEtapa["NumDialogo"]);
+            itemRespostaVoltar.Add("NumDialogo@type", "Int32");
+            itemRespostaVoltar.Add("NumEtapa", itemEtapa["NumEtapa"]);
+            itemRespostaVoltar.Add("NumEtapa@type", "Int32");
+            itemRespostaVoltar.Add("NumProxEtapa", "11");
+            itemRespostaVoltar.Add("NumProxEtapa@type", "Int32");
+            itemRespostaVoltar.Add("NumProxEtapaWpp", "11");
+            itemRespostaVoltar.Add("NumProxEtapaWpp@type", "Int32");
+            itemRespostaVoltar.Add("NumResposta", "1");
+            itemRespostaVoltar.Add("NumResposta@type", "Int32");
+            itemRespostaVoltar.Add("Ordem", "1");
+            itemRespostaVoltar.Add("Ordem@type", "Int32");
+            itemRespostaVoltar.Add("PularValidacao", "false");
+            itemRespostaVoltar.Add("PularValidacao@type", "Boolean");
+            itemRespostaVoltar.Add("ValorArmazenado", "Voltar");
+            itemRespostaVoltar.Add("ValorArmazenado@type", "String");
+            itemRespostaVoltar.Add("ListaDescricao", "Voltar");
+            itemRespostaVoltar.Add("ListaDescricao@type", "String");
+            itemRespostaVoltar.Add("ListaSessao", "1");
+            itemRespostaVoltar.Add("ListaSessao@type", "Int32");
+
+            resposta.Add(itemRespostaVoltar);
         }
     }
 }
