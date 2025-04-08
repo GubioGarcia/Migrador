@@ -309,6 +309,10 @@ namespace Migrador.Application.Services
             itemRespostaVoltar.Add("ListaDescricao@type", "String");
             itemRespostaVoltar.Add("ListaSessao", "1");
             itemRespostaVoltar.Add("ListaSessao@type", "Int32");
+            itemRespostaVoltar.Add("BotNumero", "1");
+            itemRespostaVoltar.Add("BotNumero@type", "Int32");
+            itemRespostaVoltar.Add("DataHora", DateTime.Now.ToString("o"));
+            itemRespostaVoltar.Add("DataHora@type", "DateTime");
 
             resposta.Add(itemRespostaVoltar);
         }
